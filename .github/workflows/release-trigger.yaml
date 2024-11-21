@@ -24,7 +24,7 @@ jobs:
           java-version: '8'
 
       - name: Publish package
-        run: ./gradlew -Pversion=0.0.4 publish
+        run: ./gradlew publish
         env:
-          GITHUB_ACTOR: ${{ secrets.GITHUB_ACTOR }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MAVEN_CENTRAL_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          MAVEN_CENTRAL_PASSWORD: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
