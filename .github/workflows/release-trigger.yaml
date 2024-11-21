@@ -24,6 +24,6 @@ jobs:
           java-version: '8'
 
       - name: Publish package
-        run: ./gradlew publish
+        run: ./gradlew -Pversion=0.0.4 publish
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
