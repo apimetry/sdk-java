@@ -41,4 +41,13 @@ publishing {
             }
         }
     }
+
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java // For Java projects, publishes JAR
+            groupId = 'com.apimetry'
+            artifactId = 'sdk-java'
+            version = '0.0.5'
+        }
+    }
 }

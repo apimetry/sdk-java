@@ -26,4 +26,5 @@ jobs:
       - name: Publish package
         run: ./gradlew -Pversion=0.0.4 publish
         env:
+          GITHUB_ACTOR: ${{ secrets.GITHUB_ACTOR }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
