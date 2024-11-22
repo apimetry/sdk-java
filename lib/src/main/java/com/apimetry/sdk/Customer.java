@@ -1,6 +1,7 @@
 package com.apimetry.sdk;
 
 import java.util.Objects;
+import java.util.Optional;
 
 public class Customer {
     private final String id;
@@ -11,8 +12,8 @@ public class Customer {
     }
 
     public Customer(String id, String name) {
-        this.id = id;
-        this.name = name;
+        this.id = Optional.ofNullable(id).map(String::trim).orElse("");
+        this.name = Optional.ofNullable(name).map(String::trim).orElse("");
     }
 
     public String getID() {
@@ -21,6 +22,13 @@ public class Customer {
 
     public String getName() {
         return this.name;
+    }
+
+    public boolean isValid() {
+        if (this.id == null) {
+            return false;
+        }
+        return !this.id.trim().isEmpty();
     }
 
     @Override

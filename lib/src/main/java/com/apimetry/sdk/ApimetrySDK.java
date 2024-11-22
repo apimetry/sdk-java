@@ -40,7 +40,7 @@ public class ApimetrySDK {
         if (this.otel == null) {
             return;
         }
-        if (request == null || request.getCustomer() == null) {
+        if (request == null || request.getCustomer() == null || !request.getCustomer().isValid()) {
             return;
         }
         try {
