@@ -4,21 +4,22 @@ import java.util.Objects;
 
 public class Request {
 
-    private String method;
+    private HTTPMethod method;
     private String route;
     private String path;
     private int statusCode;
     private Customer customer;
+    private String body;
 
     public Request() {
 
     }
 
-    public String getMethod() {
+    public HTTPMethod getMethod() {
         return this.method;
     }
 
-    public void setMethod(String value) {
+    public void setMethod(HTTPMethod value) {
         this.method = value;
     }
 
@@ -46,6 +47,14 @@ public class Request {
         this.statusCode = value;
     }
 
+    public String getBody() {
+        return this.body;
+    }
+
+    public void setBody(String value) {
+        this.body = value;
+    }
+
     public Customer getCustomer() {
         return this.customer;
     }
@@ -65,11 +74,12 @@ public class Request {
             && Objects.equals(this.method, that.method)
             && Objects.equals(this.route, that.route)
             && Objects.equals(this.path, that.path)
+            && Objects.equals(this.body, that.body)
             && Objects.equals(this.customer, that.customer);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.method, this.route, this.path, this.statusCode, this.customer);
+        return Objects.hash(this.method, this.route, this.path, this.statusCode, this.body, this.customer);
     }
 }

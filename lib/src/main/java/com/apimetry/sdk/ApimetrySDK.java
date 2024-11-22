@@ -49,10 +49,11 @@ public class ApimetrySDK {
                 .spanBuilder("request")
                 .startSpan();
              try {
-                 span.setAttribute("http.method", request.getMethod());
+                 span.setAttribute("http.method", request.getMethod().name());
                  span.setAttribute("http.route", request.getRoute());
                  span.setAttribute("url.path", request.getPath());
                  span.setAttribute("http.status_code", request.getStatusCode());
+                 span.setAttribute("http.body", request.getBody());
                  span.setAttribute("apimetry.customer.id", request.getCustomer().getID());
                  span.setAttribute("apimetry.customer.name", request.getCustomer().getName());
              } catch (Exception e) {
