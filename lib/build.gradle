@@ -1,6 +1,8 @@
 plugins {
     id 'java-library'
     id 'maven-publish'
+    id 'signing'
+    id 'eu.kakde.gradle.sonatype-maven-central-publisher' version '1.0.6'
 }
 
 repositories {
@@ -26,21 +28,10 @@ java {
 }
 
 tasks.named('test') {
-    // Use JUnit Platform for unit tests.
     useJUnitPlatform()
 }
 
 publishing {
-    repositories {
-        maven {
-            name = "OSSRH"
-            url = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
-            credentials {
-                username = System.getenv("MAVEN_CENTRAL_USERNAME")
-                password = System.getenv("MAVEN_CENTRAL_PASSWORD")
-            }
-        }
-    }
 
     publications {
         mavenJava(MavenPublication) {
@@ -48,6 +39,53 @@ publishing {
             groupId = 'com.apimetry'
             artifactId = 'sdk-java'
             version = '0.0.6'
+        }
+    }
+}
+
+signing {
+    sign publishing.publications.mavenJava
+}
+
+
+sonatypeCentralPublishExtension {
+    groupId.set('com.apimetry')
+    artifactId.set('sdk-java')
+    version.set('0.0.6')
+    componentType.set('java')
+    publishingType.set('AUTOMATIC') // USER_MANAGED or AUTOMATIC
+
+
+    username.set(sonatypeUsername)
+    password.set(sonatypePassword)
+
+
+    pom {
+        name.set('sdk-java')
+        description.set('Apimetry SDK for Java')
+        url.set('https://github.com/apimetry/sdk-java')
+        licenses {
+            license {
+                name.set('Apache-2.0')
+                url.set('https://opensource.org/licenses/Apache-2.0')
+            }
+        }
+        developers {
+            developer {
+                id.set('blair.harris')
+                name.set('Blair Harris')
+                organization.set('Apimetry AB')
+                organizationUrl.set('https://apimetry.com')
+            }
+        }
+        scm {
+            url.set('https://github.com/apimetry/sdk-java')
+            connection.set('scm:git:https://github.com/apimetry/sdk-java')
+            developerConnection.set('scm:git:https://github.com/apimetry/sdk-java')
+        }
+        issueManagement {
+            system.set('GitHub')
+            url.set('https://github.com/apimetry/sdk-java/issues')
         }
     }
 }
