@@ -10,6 +10,7 @@ public class Request {
     private int statusCode;
     private Customer customer;
     private String body;
+    private String workspaceCode;
 
     public Request() {
 
@@ -63,6 +64,14 @@ public class Request {
         this.customer = value;
     }
 
+    public String getWorkspaceCode() {
+        return this.workspaceCode;
+    }
+
+    public void setWorkspaceCode(String value) {
+        this.workspaceCode = value;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj == null || getClass() != obj.getClass()) {
@@ -75,11 +84,20 @@ public class Request {
             && Objects.equals(this.route, that.route)
             && Objects.equals(this.path, that.path)
             && Objects.equals(this.body, that.body)
-            && Objects.equals(this.customer, that.customer);
+            && Objects.equals(this.customer, that.customer)
+            && Objects.equals(this.workspaceCode, that.workspaceCode);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.method, this.route, this.path, this.statusCode, this.body, this.customer);
+        return Objects.hash(
+            this.method,
+            this.route,
+            this.path,
+            this.statusCode,
+            this.body,
+            this.workspaceCode,
+            this.customer
+        );
     }
 }

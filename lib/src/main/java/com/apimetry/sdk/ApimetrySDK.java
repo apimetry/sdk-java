@@ -56,6 +56,9 @@ public class ApimetrySDK {
                  span.setAttribute("http.body", request.getBody());
                  span.setAttribute("apimetry.customer.id", request.getCustomer().getID());
                  span.setAttribute("apimetry.customer.name", request.getCustomer().getName());
+                 if (request.getWorkspaceCode() != null) {
+                     span.setAttribute("apimetry.workspace.code", request.getWorkspaceCode());
+                 }
              } catch (Exception e) {
 
              }
