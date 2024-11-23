@@ -2,10 +2,14 @@ package com.apimetry.sdk;
 
 
 import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.StatusCode;
 import io.opentelemetry.exporter.otlp.http.trace.OtlpHttpSpanExporter;
 import io.opentelemetry.sdk.OpenTelemetrySdk;
 import io.opentelemetry.sdk.trace.SdkTracerProvider;
+import io.opentelemetry.sdk.trace.SpanProcessor;
 import io.opentelemetry.sdk.trace.export.BatchSpanProcessor;
+import io.opentelemetry.sdk.trace.export.SimpleSpanProcessor;
+
 
 public class ApimetrySDK {
 
@@ -20,19 +24,31 @@ public class ApimetrySDK {
         this(ApimetryConfig.fromEnv());
     }
 
-    public void init() {
+    public boolean init() {
+        final StringBuilder endpoint = new StringBuilder();
+        endpoint.append(this.config.getSatelliteURL());
+        if (!this.config.getSatelliteURL().endsWith("/")) {
+            endpoint.append("/");
+        }
+        endpoint.append("v1/traces");
         final OtlpHttpSpanExporter exporter = OtlpHttpSpanExporter.builder()
-            .setEndpoint(this.config.getSatelliteURL())
+            .setEndpoint(endpoint.toString())
             .setCompression("none")
             .build();
 
+
+        final SpanProcessor processor = this.config.isDisableBatching()
+            ? SimpleSpanProcessor.create(exporter)
+            : BatchSpanProcessor.builder(exporter).build();
+
         final SdkTracerProvider tracer = SdkTracerProvider.builder()
-            .addSpanProcessor(BatchSpanProcessor.builder(exporter).build())
+            .addSpanProcessor(processor)
             .build();
 
         this.otel = OpenTelemetrySdk.builder()
             .setTracerProvider(tracer)
             .build();
+        return true;
     }
 
 
@@ -49,6 +65,7 @@ public class ApimetrySDK {
                 .spanBuilder("request")
                 .startSpan();
              try {
+                 span.setStatus(statusCodeFrom(request.getStatusCode()));
                  span.setAttribute("http.method", request.getMethod().name());
                  span.setAttribute("http.route", request.getRoute());
                  span.setAttribute("url.path", request.getPath());
@@ -58,13 +75,20 @@ public class ApimetrySDK {
                  span.setAttribute("apimetry.customer.name", request.getCustomer().getName());
                  if (request.getWorkspaceCode() != null) {
                      span.setAttribute("apimetry.workspace.code", request.getWorkspaceCode());
+                 } else if (this.config.getDefaultWorkspaceCode() != null) {
+                     span.setAttribute("apimetry.workspace.code", this.config.getDefaultWorkspaceCode());
                  }
              } catch (Exception e) {
-
              }
             span.end();
         } catch (Exception e) {
-
         }
+    }
+
+    private static StatusCode statusCodeFrom(int status) {
+        if (status >= 200 && status < 300) {
+            return StatusCode.OK;
+        }
+        return StatusCode.ERROR;
     }
 }

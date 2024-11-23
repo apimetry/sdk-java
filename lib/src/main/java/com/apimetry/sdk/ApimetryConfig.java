@@ -4,6 +4,7 @@ public class ApimetryConfig {
 
     private String satelliteURL;
     private String defaultWorkspaceCode;
+    private boolean disableBatching;
 
     public static ApimetryConfig baseConfig() {
         return new ApimetryConfig();
@@ -30,5 +31,13 @@ public class ApimetryConfig {
 
     public void setDefaultWorkspaceCode(String value) {
         this.defaultWorkspaceCode = value;
+    }
+
+    public void setDisableBatching(boolean value) {
+        this.disableBatching = value;
+    }
+
+    public boolean isDisableBatching() {
+        return this.disableBatching;
     }
 }
