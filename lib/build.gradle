@@ -39,7 +39,7 @@ publishing {
             from components.java // For Java projects, publishes JAR
             groupId = 'com.apimetry'
             artifactId = 'sdk-java'
-            version = '0.0.8'
+            version = '0.0.9'
         }
     }
 }
@@ -52,7 +52,7 @@ signing {
 sonatypeCentralPublishExtension {
     groupId.set('com.apimetry')
     artifactId.set('sdk-java')
-    version.set('0.0.8')
+    version.set('0.0.9')
     componentType.set('java')
     publishingType.set('AUTOMATIC') // USER_MANAGED or AUTOMATIC
 
