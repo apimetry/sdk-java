@@ -16,6 +16,7 @@ dependencies {
 
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
+    implementation 'org.slf4j:slf4j-api:2.0.16'
     implementation 'io.opentelemetry:opentelemetry-api:1.40.0'
     implementation 'io.opentelemetry:opentelemetry-sdk:1.40.0'
     implementation 'io.opentelemetry:opentelemetry-exporter-otlp:1.40.0'

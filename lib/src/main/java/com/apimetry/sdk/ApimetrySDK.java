@@ -9,15 +9,21 @@ import io.opentelemetry.sdk.trace.SdkTracerProvider;
 import io.opentelemetry.sdk.trace.SpanProcessor;
 import io.opentelemetry.sdk.trace.export.BatchSpanProcessor;
 import io.opentelemetry.sdk.trace.export.SimpleSpanProcessor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class ApimetrySDK {
 
+    private static final Logger log = LoggerFactory.getLogger(ApimetrySDK.class);
+
     private final ApimetryConfig config;
+    private final ErrorBouncing errors;
     private OpenTelemetrySdk otel;
 
     public ApimetrySDK(ApimetryConfig config) {
         this.config = config;
+        this.errors = new ErrorBouncing();
     }
 
     public ApimetrySDK() {
@@ -25,6 +31,10 @@ public class ApimetrySDK {
     }
 
     public boolean init() {
+        if (this.config.getSatelliteURL() == null) {
+            log.warn("satellite url not specified, sdk nullified!");
+            return false;
+        }
         final StringBuilder endpoint = new StringBuilder();
         endpoint.append(this.config.getSatelliteURL());
         if (!this.config.getSatelliteURL().endsWith("/")) {
@@ -54,9 +64,18 @@ public class ApimetrySDK {
 
     public void record(Request request) {
         if (this.otel == null) {
+            if (this.errors.sdkNotConfigured()) {
+                log.error("Apimetry SDK is not configured to record requests, call init()");
+            }
             return;
         }
-        if (request == null || request.getCustomer() == null || !request.getCustomer().isValid()) {
+        if (request == null) {
+            return;
+        }
+        if (request.getCustomer() == null || !request.getCustomer().isValid()) {
+            if (this.errors.requestMissingCustomer()) {
+                log.warn("request is missing customer, will not record, path='{}'", request.getPath());
+            }
             return;
         }
         try {
@@ -64,24 +83,25 @@ public class ApimetrySDK {
                 .get("apimetry")
                 .spanBuilder("request")
                 .startSpan();
-             try {
-                 span.setStatus(statusCodeFrom(request.getStatusCode()));
-                 span.setAttribute("http.method", request.getMethod().name());
-                 span.setAttribute("http.route", request.getRoute());
-                 span.setAttribute("url.path", request.getPath());
-                 span.setAttribute("http.status_code", request.getStatusCode());
-                 span.setAttribute("http.body", request.getBody());
-                 span.setAttribute("apimetry.customer.id", request.getCustomer().getID());
-                 span.setAttribute("apimetry.customer.name", request.getCustomer().getName());
-                 if (request.getWorkspaceCode() != null) {
-                     span.setAttribute("apimetry.workspace.code", request.getWorkspaceCode());
-                 } else if (this.config.getDefaultWorkspaceCode() != null) {
-                     span.setAttribute("apimetry.workspace.code", this.config.getDefaultWorkspaceCode());
-                 }
-             } catch (Exception e) {
-             }
+            span.setStatus(statusCodeFrom(request.getStatusCode()));
+            span.setAttribute("http.method", request.getMethod().name());
+            span.setAttribute("http.route", request.getRoute());
+            span.setAttribute("url.path", request.getPath());
+            span.setAttribute("http.status_code", request.getStatusCode());
+            span.setAttribute("http.body", request.getBody());
+            span.setAttribute("apimetry.customer.id", request.getCustomer().getID());
+            span.setAttribute("apimetry.customer.name", request.getCustomer().getName());
+            span.end();
+            if (request.getWorkspaceCode() != null) {
+                span.setAttribute("apimetry.workspace.code", request.getWorkspaceCode());
+            } else if (this.config.getDefaultWorkspaceCode() != null) {
+                span.setAttribute("apimetry.workspace.code", this.config.getDefaultWorkspaceCode());
+            }
             span.end();
         } catch (Exception e) {
+            if (this.errors.failedToRecordRequest()) {
+                log.error("failed to record request to Apimetry", e);
+            }
         }
     }
 
