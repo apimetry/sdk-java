@@ -16,7 +16,7 @@ class ApimetrySDKTest {
         Request request = new Request();
         request.setMethod(HTTPMethod.GET);
         request.setRoute("/users/{id}");
-        request.setPath("/users/123");
+        request.setTarget("/users/123");
         request.setCustomer(new Customer("1", "Microsoft"));
         request.setStatusCode(200);
 

@@ -6,7 +6,7 @@ public class Request {
 
     private HTTPMethod method;
     private String route;
-    private String path;
+    private String target;
     private int statusCode;
     private Customer customer;
     private String body;
@@ -32,12 +32,12 @@ public class Request {
         this.route = value;
     }
 
-    public String getPath() {
-        return this.path;
+    public String getTarget() {
+        return this.target;
     }
 
-    public void setPath(String value) {
-        this.path = value;
+    public void setTarget(String value) {
+        this.target = value;
     }
 
     public int getStatusCode() {
@@ -82,7 +82,7 @@ public class Request {
         return this.statusCode == that.statusCode
             && Objects.equals(this.method, that.method)
             && Objects.equals(this.route, that.route)
-            && Objects.equals(this.path, that.path)
+            && Objects.equals(this.target, that.target)
             && Objects.equals(this.body, that.body)
             && Objects.equals(this.customer, that.customer)
             && Objects.equals(this.workspaceCode, that.workspaceCode);
@@ -93,7 +93,7 @@ public class Request {
         return Objects.hash(
             this.method,
             this.route,
-            this.path,
+            this.target,
             this.statusCode,
             this.body,
             this.workspaceCode,

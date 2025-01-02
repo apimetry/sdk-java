@@ -74,7 +74,7 @@ public class ApimetrySDK {
         }
         if (request.getCustomer() == null || !request.getCustomer().isValid()) {
             if (this.errors.requestMissingCustomer()) {
-                log.warn("request is missing customer, will not record, path='{}'", request.getPath());
+                log.warn("request is missing customer, will not record, target='{}'", request.getTarget());
             }
             return;
         }
@@ -86,7 +86,7 @@ public class ApimetrySDK {
             span.setStatus(statusCodeFrom(request.getStatusCode()));
             span.setAttribute("http.method", request.getMethod().name());
             span.setAttribute("http.route", request.getRoute());
-            span.setAttribute("url.path", request.getPath());
+            span.setAttribute("http.target", request.getTarget());
             span.setAttribute("http.status_code", request.getStatusCode());
             span.setAttribute("http.body", request.getBody());
             span.setAttribute("apimetry.customer.id", request.getCustomer().getID());
